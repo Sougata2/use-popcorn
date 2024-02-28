@@ -62,7 +62,7 @@ export default function StarRating({
           />
         ))}
       </div>
-      <p style={textStyle}>{messages[tempRating - 1] || ""}</p>
+      <p style={textStyle}>{tempRating ?? ""}</p>
     </div>
   );
 }
