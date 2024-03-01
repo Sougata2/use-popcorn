@@ -235,8 +235,6 @@ function Movie({ movie, onSelectedMovie }) {
 }
 function MovieDetails({ selectedId, handleCloseMovie }) {
   const [movie, setMovie] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-
   const {
     Title: title,
     Year: year,
@@ -249,6 +247,9 @@ function MovieDetails({ selectedId, handleCloseMovie }) {
     Director: director,
     Genre: genre,
   } = movie;
+  const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState(imdbRating);
+
   // console.log(title, year);
   useEffect(
     function () {
@@ -261,6 +262,7 @@ function MovieDetails({ selectedId, handleCloseMovie }) {
         console.log(data);
         setMovie(data);
         setIsLoading(false);
+        setRating(Math.round(+data.imdbRating));
       }
       getMovieDetails();
     },
@@ -290,7 +292,13 @@ function MovieDetails({ selectedId, handleCloseMovie }) {
           </header>
 
           <section>
-            <StarRating maxRating={10} size={24} key={selectedId} />
+            <StarRating
+              maxRating={10}
+              size={24}
+              key={selectedId}
+              defaultRating={rating}
+              onSetRating={setRating}
+            />
             <p>
               <em>{plot}</em>
             </p>
