@@ -75,7 +75,7 @@ function App() {
         setIsLoading(true);
         setError(""); // need to reset the error to show the fetched results
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}&page=${page}`
+          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}&page=${page}`
         );
 
         if (!res.ok)
@@ -256,7 +256,7 @@ function MovieDetails({ selectedId, handleCloseMovie }) {
       async function getMovieDetails() {
         setIsLoading(true);
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+          `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
         );
         const data = await res.json();
         console.log(data);
