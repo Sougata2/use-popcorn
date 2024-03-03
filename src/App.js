@@ -112,6 +112,7 @@ function App() {
       setError("");
       return;
     }
+    handleCloseMovie();
     fetchMovies();
 
     return function () {
@@ -290,7 +291,7 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
           `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
         );
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         setMovie(data);
         setIsLoading(false);
         setRating(Math.round(+data.imdbRating));
@@ -309,6 +310,21 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
       };
     },
     [title]
+  );
+
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          handleCloseMovie();
+        }
+      }
+      document.addEventListener("keydown", callback);
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [handleCloseMovie]
   );
 
   return (
@@ -364,13 +380,13 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
 }
 
 function WatchedSummery({ watched }) {
-  console.log(watched);
+  // console.log(watched);
   const avgImdbRating = average(watched.map((movie) => +movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(
     watched.map((movie) => Number(movie.Runtime.split(" ").at(0)))
   );
-  console.log(avgRuntime);
+  // console.log(avgRuntime);
   return (
     <div className="summary">
       <h2>Movies you watched</h2>
