@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 const KEY = "acc82eb2";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 function App() {
-  const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("naruto");
   const [selectedId, setSelectedId] = useState(null);
   const { movies, isLoading, error } = useMovies(query);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -269,7 +270,6 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
     };
     onAddWatched(newWatchedMovie);
     setAvgRating(Number(imdbRating));
-    console.log(avergeRating);
     setAvgRating((avergeRating) => avergeRating / 2);
   }
 
@@ -340,7 +340,6 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-          <p>{avergeRating}</p>
           <section>
             {!isWatched && (
               <>
