@@ -1,22 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
-
+import { useMovies } from "./useMovies";
 const KEY = "acc82eb2";
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("naruto");
   const [selectedId, setSelectedId] = useState(null);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
-
-  const page = 1;
+  const { movies, isLoading, error } = useMovies(query);
 
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -34,55 +28,48 @@ function App() {
     setWatched((movies) => movies.filter((movie) => movie.imdbID !== id));
   }
 
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
+  // useEffect(() => {
+  //   const controller = new AbortController();
+  //   async function fetchMovies() {
+  //     try {
+  //       setIsLoading(true);
+  //       setError(""); // need to reset the error to show the fetched results
+  //       const res = await fetch(
+  //         `https://www.omdbapi.com/?apikey=${KEY}&s=${query}&page=${page}`,
+  //         { signal: controller.signal }
+  //       );
 
-  useEffect(() => {
-    const controller = new AbortController();
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        setError(""); // need to reset the error to show the fetched results
-        const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}&page=${page}`,
-          { signal: controller.signal }
-        );
+  //       if (!res.ok)
+  //         throw new Error("Something went wrong with fetching movies");
 
-        if (!res.ok)
-          throw new Error("Something went wrong with fetching movies");
+  //       const data = await res.json();
+  //       // console.log(data);
 
-        const data = await res.json();
-        // console.log(data);
+  //       if (data.Response === "False") throw new Error("Movie not found.");
 
-        if (data.Response === "False") throw new Error("Movie not found.");
+  //       setMovies((movies) => data.Search);
+  //       setError("");
+  //     } catch (err) {
+  //       if (err.name !== "AbortError") {
+  //         setError(err.message);
+  //       }
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-        setMovies((movies) => data.Search);
-        setError("");
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  //   if (!query.length) {
+  //     setMovies([]);
+  //     setError("");
+  //     return;
+  //   }
+  //   handleCloseMovie();
+  //   fetchMovies();
 
-    if (!query.length) {
-      setMovies([]);
-      setError("");
-      return;
-    }
-    handleCloseMovie();
-    fetchMovies();
-
-    return function () {
-      controller.abort();
-    };
-  }, [query]);
+  //   return function () {
+  //     controller.abort();
+  //   };
+  // }, [query]);
   return (
     <>
       <NavBar movies={movies}>
@@ -245,6 +232,7 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState("");
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const [avergeRating, setAvgRating] = useState(0);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
