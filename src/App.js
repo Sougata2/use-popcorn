@@ -225,8 +225,19 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  /* eslint-disable */
   // if (imdbRating > 8) [isTop, setIsTop] = useState("true");   conditionally setting state breaks the code.
+
+  // const [isTop, setIsTop] = useState(imdbRating > 8);
+  // console.log(isTop);
+  // useEffect(
+  //   function () {
+  //     setIsTop(imdbRating > 8);
+  //   },
+  //   [imdbRating]
+  // );
+
+  const isTop = imdbRating > 8;
+  console.log(isTop);
 
   const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState("");
@@ -235,9 +246,14 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
     (movie) => movie.imdbID === selectedId
   )?.userRating;
 
+  const [avergeRating, setAvgRating] = useState(0);
+
   function handleAdd() {
     const newWatchedMovie = { ...movie, userRating: rating };
     onAddWatched(newWatchedMovie);
+    setAvgRating(Number(imdbRating));
+    console.log(avergeRating);
+    setAvgRating((avergeRating) => avergeRating / 2);
   }
 
   // console.log(title, year);
@@ -307,7 +323,7 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-
+          <p>{avergeRating}</p>
           <section>
             {!isWatched && (
               <>
