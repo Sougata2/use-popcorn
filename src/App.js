@@ -232,6 +232,22 @@ function Movie({ movie, onSelectedMovie }) {
 }
 function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState("");
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
+  const [userRating, setUserRating] = useState("");
+
+  const countRef = useRef(0);
+  useEffect(
+    function () {
+      if (userRating) countRef.current++;
+    },
+    [userRating]
+  );
+
   const {
     Title: title,
     Year: year,
@@ -245,18 +261,14 @@ function MovieDetails({ selectedId, handleCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  /* eslint-disable */
   // if (imdbRating > 8) [isTop, setIsTop] = useState("true");   conditionally setting state breaks the code.
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [rating, setRating] = useState("");
-  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
-  const watchedUserRating = watched.find(
-    (movie) => movie.imdbID === selectedId
-  )?.userRating;
-
   function handleAdd() {
-    const newWatchedMovie = { ...movie, userRating: rating };
+    const newWatchedMovie = {
+      ...movie,
+      userRating: rating,
+      countRatingDecisions: countRef.current,
+    };
     onAddWatched(newWatchedMovie);
   }
 
